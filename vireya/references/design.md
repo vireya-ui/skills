@@ -1,8 +1,6 @@
 # Vireya design guidelines — making decisions, not just following rules
 
-This is the **decision layer**: when you face a fork (which color, which component, which spacing step), pick the right one. Code-mechanical rules (imports, `forwardRef`, CSS Module conventions) live in `SKILL.md`. Token names and scales live in `tokens.md`. This file is about **judgment**.
-
-The canonical source is `DESIGN.md` at the repo root (637 lines). This skill page is the distilled decision tree. If the two ever conflict, `DESIGN.md` wins — fix this file.
+This is the **decision layer**: when you face a fork (which color, which component, which spacing step), pick the right one. Token names and scales live in `tokens.md`. This file is about **judgment**.
 
 ---
 
@@ -10,12 +8,11 @@ The canonical source is `DESIGN.md` at the repo root (637 lines). This skill pag
 
 These are non-negotiable. Every decision below derives from one of them.
 
-1. **Token-first — ABSOLUTE.** Visual properties go through `--v-*` tokens. If the right token doesn't exist, **add it to `@vireya/core` first**, then use it. Never inline a literal "for now". A token is cheaper to ship than a future migration.
-2. **Composition over configuration.** Three boolean variants on a component is fine. Twelve is a contract failure. When variation explodes, expose slots (`ReactNode` props) or `asChild`.
-3. **Server-renderable by default.** Reach for `"use client"` only when the component genuinely needs state, refs, or browser APIs. Static layout, links, headings — never client.
-4. **Escape hatches always.** `className`, `style`, `asChild`, exposed `<Component>Styles`. The user is never trapped.
-5. **Accessibility is a baseline, not a feature.** `:focus-visible`, ARIA, keyboard, reduced-motion, contrast — floors, not opt-ins.
-6. **Source of truth lives in `@vireya/core`.** If `@vireya/ui` is computing something the core could expose, **fix the core**. If a block reaches for a value that should be a token, **add the token**. Never patch downstream.
+1. **Token-first — ABSOLUTE.** Visual properties go through `var(--v-*)`. If the right token doesn't exist, override locally via inline `style` or a CSS Module variable, then open an issue at [`vireya-ui/skills/issues`](https://github.com/vireya-ui/skills/issues) so it can be added upstream. Don't proliferate one-off literals — concentrate them in one CSS module if multiple uses appear.
+2. **Composition over configuration.** Vireya components avoid prop explosion: when variation grows, they expose slots (`ReactNode` props) or `asChild`. Apply the same rule to your own wrappers.
+3. **Server-renderable by default.** Most Vireya components are server-renderable. Reach for `"use client"` only in your own components when you genuinely need state, refs, or browser APIs.
+4. **Escape hatches always available.** Vireya never traps you: `className`, `style`, `asChild`, `<Component>Styles` reexport. Use them before forking.
+5. **Accessibility is a baseline, not a feature.** `:focus-visible`, ARIA, keyboard, reduced-motion, contrast — floors, not opt-ins. Vireya enforces these internally; mirror the same in your own components.
 
 ---
 
@@ -346,15 +343,7 @@ If `Dialog` already exposes `Dialog.Root + .Trigger + .Content + .Header + .Foot
 
 ### Forward refs and rest props — always
 
-`forwardRef + ...props` spread is the contract. Never filter unknown props — consumers add `aria-*`, `data-*`, event handlers you don't know about.
-
-### Tokens before variants
-
-A `variant="warning"` prop on a Button means there should be a `--v-warning-fill` token first. **Decisions go into the token layer; components consume.** No exceptions.
-
-### Fix upstream
-
-Block needs a border-color the theme doesn't provide? Add a `border` sub-token to `@vireya/core/parseColor`. UI button needs a hover state that isn't auto-derived right? Fix `safeLighten`. **Don't paper over in the leaf component.**
+`forwardRef + ...props` spread is the contract Vireya follows. When you write your own components, do the same: never filter unknown props — consumers (you, future-self, teammates) add `aria-*`, `data-*`, event handlers you don't know about.
 
 ---
 
@@ -474,8 +463,7 @@ These are minimums. Going below is a bug.
 
 If a decision feels wrong but the tokens/components don't accommodate it cleanly, **the system is missing something** — not your problem to bend the rules around. The right move:
 
-1. Check `DESIGN.md` §15 (open gaps) — your case may already be tracked.
-2. Open the gap. Add the token / sub-component / variant to `@vireya/core` or `@vireya/ui` first.
-3. Then use it from your code.
-
-This is the "Source of truth" principle in practice. **Never patch downstream.**
+1. **Try the escape hatches first.** Every Vireya component accepts `className` and `style`. Many also export their CSS Module as `<Component>Styles` — compose locally with `clsx`. For polymorphism, `asChild` lets you swap the rendered element.
+2. **Override block-scoped tokens** when a block exposes them (see [Block-scoped tokens](#block-scoped-tokens) above). Consumer-controllable tokens live under `--v-block-{family}-*` — set them on a wrapper class or via inline `style` to retheme one block instance.
+3. **If nothing fits, open an issue at [`vireya-ui/skills/issues`](https://github.com/vireya-ui/skills/issues).** Describe the use case, what you tried, and what surface (token / component variant / sub-component) would solve it.
+4. **Don't invent your own `--v-*` tokens.** That namespace belongs to the design system; future Vireya releases may collide. Use a distinct prefix (`--app-*`, `--mybrand-*`) for app-local CSS variables.

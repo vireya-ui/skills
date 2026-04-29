@@ -4,7 +4,7 @@ Pre-composed landing-page sections in `@vireya/blocks`. All blocks use a compoun
 
 **`emphasis: "primary" | "accent"` (default `"accent"`) is opt-in by design** — only the 8 blocks with concrete accent-eligible visual elements expose it: `hero/{centered,splitVisual}`, `pricing/{tiers,twoTier}`, `feature/{steps,checkList,highlights}`, `eyebrow`. The other 19 blocks intentionally lack `emphasis` because they have no internal element where `accent` vs `primary` would have a visible effect (footers/navbars/logo clouds are neutral chrome; CTAs use `variant`; FAQ/contact/hero-minimal/etc. defer to the `eyebrow` slot — pass `<Eyebrow emphasis="accent">` directly when you need accent there).
 
-For prop details beyond what's listed here, open `packages/blocks/src/<family>/<name>/index.tsx`.
+For prop details beyond what's listed here, open the DTS at `node_modules/@vireya/blocks/dist/components/<family>/<name>/index.d.ts` (or use IDE go-to-definition on the import).
 
 ---
 

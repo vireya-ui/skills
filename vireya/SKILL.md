@@ -13,7 +13,7 @@ This skill teaches you the rules, package boundaries, import shape, and conventi
 
 ## NON-NEGOTIABLE RULES
 
-1. **Tokens are absolute.** Every CSS visual property goes through a `--v-*` token. Hardcoded `px`/`#hex`/`rgb()`/`rgba()` is a bug. The only allowed literals are: `0`, `100%`, `9999px` (true pill/circle), `1px` or `1.4px` for inline-SVG hairlines, `currentColor` in icons, and percentages in calc. If the token you need doesn't exist, **add it to `@vireya/core` first**, then use it. Never ship one-off literals "for now".
+1. **Tokens are absolute.** Every CSS visual property goes through a `--v-*` token. Hardcoded `px`/`#hex`/`rgb()`/`rgba()` is a bug. The only allowed literals are: `0`, `100%`, `9999px` (true pill/circle), `1px` or `1.4px` for inline-SVG hairlines, `currentColor` in icons, and percentages in calc. If the token you need doesn't exist, override locally via inline `style`/`className` and open an issue at [`vireya-ui/skills/issues`](https://github.com/vireya-ui/skills/issues) so it can be added upstream. Never ship one-off literals "for now".
 
 2. **`primary` ≠ `accent`.** `primary` is neutral-strong (near-black on light, near-white on dark) — use it for body text and default CTAs. `accent` is brand-vivid (magenta, teal, green, etc.) — use it only for promotional/highlight roles (popular badge, focus ring, eyebrow dot, hero CTA). `accent` is **optional** and falls back to `primary`. Always chain the fallback in CSS:
    ```css
@@ -75,7 +75,7 @@ border: 1px solid var(--v-primary-border);
 
 ## COMPONENT CATALOG (67 components, 8 groups)
 
-For prop details, open the file at `packages/ui/src/components/<group>/<name>/index.tsx`. Every component exports a typed `IProps` (e.g. `IButtonProps`).
+For prop details, open the DTS at `node_modules/@vireya/ui/dist/components/<group>/<name>/index.d.ts` (or use IDE go-to-definition on the import). Every component exports a typed `IProps` (e.g. `IButtonProps`).
 
 ### form (15)
 `@vireya/ui/form/button` `baseField` `checkbox` `colorField` `colorPicker` `copyField` `dateField` `input` `passwordField` `radiogroup` `select` `slider` `switch` `textArea` `toggleGroup` `uploadArea`
@@ -135,30 +135,16 @@ For full subcomponent shapes (e.g. `PricingTiers.Tier` props, `ContactSplit.Form
 
 ---
 
-## CONVENTIONS — writing NEW components for `@vireya/ui`
+## COMPOSING YOUR OWN COMPONENTS alongside Vireya
 
-Canonical reference: `packages/ui/src/components/form/button/index.tsx`. Mirror its shape exactly:
+When you need a custom component your app, build it so it coexists cleanly with Vireya. The same rules apply to YOUR CSS:
 
-1. `"use client"` at the top **only if** the component needs state, refs, or hooks. Keep it server-renderable when possible.
-2. `forwardRef<HTMLElement, IProps>` — always. Forward to the underlying DOM node.
-3. Export the `IProps` interface (`IButtonProps`, `ICardProps`, etc.). Extend the appropriate HTML attribute type (`ButtonHTMLAttributes<HTMLButtonElement>`, `HTMLAttributes<HTMLDivElement>`, ...).
-4. **Spread unknown `...props`** — never filter. Consumers add `aria-*`, `data-*`, event handlers.
-5. Colocate `index.module.css` in the same folder. CSS Module class names use `kebab-case` for the base, `underscore_separators` for variant names: `.variant_primary`, `.surface_solid`, `.shape_circle`, `.size_md`.
-6. Compose classNames with `tatcn` from `src/utils/modules/array-to-classname` (it's a `clsx` alias):
-   ```ts
-   className={tatcn([className, styles.button, styles[`variant_${variant}`], full && styles.full])}
-   ```
-7. For polymorphism, accept `asChild?: boolean` and use `Slot` (+ `Slottable` when there are extra children) from `src/utils/modules/slot`:
-   ```tsx
-   const Btn = asChild ? Slot : "button";
-   return <Btn ref={forwardedRef} {...props} className={tatcn(...)}>{asChild ? <Slottable>{children}</Slottable> : children}</Btn>;
-   ```
-8. Re-export the styles object so consumers can compose: `export { Button, ButtonStyles }; const ButtonStyles = styles;`
-9. Set `Button.displayName = "Button"`.
-10. In CSS: gate hover with `:not(:disabled):hover`. Disabled = `opacity: 0.5; cursor: not-allowed`. Transitions name explicit properties (never `transition: all`).
-11. Every CSS value is a token. **Re-read NON-NEGOTIABLE RULE #1.**
-
-**Build system:** the `tsup` config auto-discovers every `index.tsx` under `src/components/` via fast-glob. Adding a new component folder is enough — `ExportMakerPlugin` regenerates the package.json `exports` map on build. Don't hand-edit the exports block. Reference: `packages/ui/tsup.config.ts`.
+1. **Tokens-first** — every visual property in your CSS goes through `var(--v-*)`. The token rule applies to app code, not just `@vireya/ui`. If you need a value that isn't tokenized, override it inline or in a CSS Module variable, then open an issue at [`vireya-ui/skills/issues`](https://github.com/vireya-ui/skills/issues) so it can be added upstream.
+2. **`forwardRef + asChild` for polymorphism** — mirror Vireya's pattern (see e.g. `Button` exporting `IButtonProps`). Use `@radix-ui/react-slot` (`npm i @radix-ui/react-slot`) for the `Slot`/`Slottable` helpers — that's what Vireya uses internally.
+3. **Compose classNames with `clsx`** (`npm i clsx`). Vireya's internal `tatcn` helper is just a `clsx` alias and isn't exported publicly — use `clsx` directly.
+4. **Override Vireya's look without forking** — every Vireya component accepts `className` and `style`. Many also export their CSS Module as `<Component>Styles` (e.g. `import { Button, ButtonStyles } from "@vireya/ui/form/button"`) so you can compose `clsx([ButtonStyles.button, myStyles.foo])` in your own component that wraps Vireya.
+5. **Stay out of the `--v-*` namespace for app-local CSS variables.** That prefix belongs to the design system; use a distinct prefix (e.g. `--app-*`) for app-local vars to avoid collisions on future Vireya releases.
+6. **A11y baseline matches Vireya's:** `:focus-visible` not `:focus`; disabled = `opacity: 0.5; cursor: not-allowed`; transitions name explicit properties (never `transition: all`).
 
 ---
 
@@ -179,8 +165,7 @@ The full template (with copy-pasteable files) is in `references/setup.md`. Minim
 - **Without this wrapper, `Calendar`/`DateField`/`Select` indicator/`Toast`/`DropdownMenu` checkmarks/etc. break.** Required icon names: `Calendar`, `Check`, `ChevronDown`, `ChevronLeft`, `ChevronRight`, `ChevronUp`, `Circle`, `Close` (alias of `X`), `CloudUpload`, `Copy`, `Eye`, `EyeOff`, `Search`, `Brush`.
 
 **`styles/globals.css`** (or wherever your app globals live):
-- Define `--v-page-max-width` and `--v-page-padding` on `body`. **These tokens are NOT shipped by `@vireya/core`** but blocks assume they exist.
-- Recommended: `--v-page-max-width: 1520px; --v-page-padding: var(--v-width-16);` (or `clamp(16px, 5vw, 32px)`).
+- `--v-page-max-width` (default `1200px`) and `--v-page-padding` (default `clamp(16px, 5vw, 32px)`) ship from `@vireya/core` automatically. Override on `body` only if you want a different rhythm — e.g. `body { --v-page-max-width: 1520px; }` for a wider canvas.
 
 ---
 
@@ -205,7 +190,7 @@ Full decision guide in `references/design.md`. The five rules that prevent most 
 | Need | Open |
 |---|---|
 | Choosing between components, color hierarchy, spacing rhythm, weight/size mapping, anti-patterns, "should this be a Dialog or a Sheet" | `references/design.md` |
-| Detailed props of a specific component | `packages/ui/src/components/<group>/<name>/index.tsx` directly |
+| Detailed props of a specific component | The DTS at `node_modules/@vireya/ui/dist/components/<group>/<name>/index.d.ts` (or IDE go-to-definition on the import) |
 | Full token catalog (every scale, every composite token, full color sub-token model) | `references/tokens.md` |
 | Block subcomponent shapes (e.g. `PricingTiers.Tier`, `ContactSplit.Form` value type) | `references/blocks.md` |
 | Boilerplate for a new Next.js app, custom themes, theme switching, motion presets | `references/setup.md` |
@@ -218,7 +203,7 @@ Full decision guide in `references/design.md`. The five rules that prevent most 
 Full list in `references/gotchas.md`. The ones that cause most pain:
 
 1. **`AppProvider` is required.** Without the client wrapper providing icons + locale, components like `DateField`, `Calendar`, `Select` (chevron indicator), `Toast` close button, `DropdownMenu` checkmarks render broken or invisible.
-2. **`--v-page-padding` and `--v-page-max-width` ship from `@vireya/core` with sane defaults** (`clamp(16px, 5vw, 32px)` and `1200px`). Apps may override on `body` if they want a different rhythm — `apps/www` uses `1520px`. Blocks consume them transparently.
+2. **`--v-page-padding` and `--v-page-max-width` ship from `@vireya/core` with sane defaults** (`clamp(16px, 5vw, 32px)` and `1200px`). Apps may override on `body` if they want a different rhythm (e.g. `--v-page-max-width: 1520px;` for a wider canvas). Blocks consume them transparently.
 3. **Don't export non-component metadata from `"use client"` modules.** Constants, objects, arrays, `meta` exports return `undefined` when imported from a server component. Bake metadata at build time or move it to a server-only module.
 4. **No barrel imports.** `@vireya/ui` root only exports `AppProvider`. Components are subpath-only: `@vireya/ui/form/button`. Same for `@vireya/blocks`.
 5. **`accent` requires fallback chains.** Apps that don't define an accent get `undefined` on those vars. Always: `var(--v-accent-fill, var(--v-primary-fill))`.

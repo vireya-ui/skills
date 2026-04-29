@@ -1,6 +1,6 @@
 # Next.js setup with Vireya
 
-Canonical reference: `apps/www/src/app/layout.tsx` + `layout.client.tsx` + `src/styles/globals.css`. Copy-pasteable templates below.
+Copy-pasteable templates below — drop them into a fresh Next.js app and you're done.
 
 ---
 

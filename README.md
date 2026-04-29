@@ -1,6 +1,6 @@
 # Vireya skills for Claude Code
 
-Claude Code skill for the [**Vireya Design System**](https://github.com/vireya-ui/vireya.mapree.dev) — a token-first React design system with 67 components, 26 pre-composed blocks, theme provider, and motion presets.
+Claude Code skill for the **Vireya Design System** — a token-first React design system with 67 components, 26 pre-composed blocks, theme provider, and motion presets, distributed on npm as `@vireya/core`, `@vireya/ui`, `@vireya/next`, and `@vireya/blocks`.
 
 Install once and Claude Code becomes an expert at building UIs with `@vireya/core`, `@vireya/ui`, `@vireya/next`, and `@vireya/blocks` — correct subpath imports, `--v-*` token compliance, `forwardRef` + `asChild` + CSS Module conventions, Next.js setup with `ThemeProvider` + `AppProvider`, and the design decision tree (which color tier, when to use `Dialog` vs `Sheet`, spacing rhythm, elevation hierarchy, etc.).
 
@@ -122,16 +122,11 @@ If any of those are missing, the skill probably isn't loaded. Check `~/.claude/s
 
 ---
 
-## Source of truth
+## Source of truth & feedback
 
-This repo is **auto-published** by a GitHub Action in the Vireya monorepo. The canonical version of every file here lives at:
+This repo is **auto-published** from a private upstream by a GitHub Action. Each commit message references the upstream source SHA. **Do not edit files here directly** — they will be overwritten on the next sync.
 
-[`vireya-ui/vireya.mapree.dev/skills/vireya/`](https://github.com/vireya-ui/vireya.mapree.dev/tree/master/skills/vireya) (skill content)
-[`vireya-ui/vireya.mapree.dev/.github/distribution/skills/`](https://github.com/vireya-ui/vireya.mapree.dev/tree/master/.github/distribution/skills) (this README)
-
-Every push to `master` in the monorepo that touches those paths triggers a sync to this repo. Each commit message here references the upstream source SHA.
-
-**Do not edit files here directly** — open a PR against the monorepo instead.
+To request changes (new component coverage, missing token, design rule update, bug in catalog, doc clarification), open an issue at [`vireya-ui/skills/issues`](https://github.com/vireya-ui/skills/issues).
 
 ---
 
@@ -143,7 +138,7 @@ This skill tracks the `@vireya/*` packages on npm. When the design system ships 
 cd ~/code/vireya-skills && git checkout <commit-sha>
 ```
 
-Compatible with **`@vireya/*` 0.0.0+**. The skill doesn't depend on a specific version — it teaches the canonical patterns documented in [`DESIGN.md`](https://github.com/vireya-ui/vireya.mapree.dev/blob/master/DESIGN.md) and [`CLAUDE.md`](https://github.com/vireya-ui/vireya.mapree.dev/blob/master/CLAUDE.md). If those rules change, this skill changes too.
+Compatible with **`@vireya/*` 0.0.0+**. The skill teaches canonical patterns of the design system — when those patterns evolve in a new release, this skill is updated to match.
 
 ---
 
@@ -155,4 +150,4 @@ This skill is **web-focused** (`@vireya/ui` + `@vireya/blocks` + `@vireya/next` 
 
 ## License
 
-MIT. See the parent design system at [vireya-ui/vireya.mapree.dev](https://github.com/vireya-ui/vireya.mapree.dev) for full project info.
+MIT. The Vireya Design System is published on npm as `@vireya/core`, `@vireya/ui`, `@vireya/next`, and `@vireya/blocks`.

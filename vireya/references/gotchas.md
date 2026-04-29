@@ -119,18 +119,9 @@ Even with `AppProvider` set, if your `locale` doesn't include a `calendar` key (
 ### `Eyebrow` is a slot, not a fixed text component
 Block props like `eyebrow?: ReactNode` accept any node. Pass a `<Eyebrow variant="dot" emphasis="accent">Label</Eyebrow>` for richer treatments, not just a string. Don't write a custom span — the `Eyebrow` primitive already handles the variants.
 
-### Showcase variant dedup
-If a new showcase only differs from an existing one by toggling an opt-in prop (`popular`, `bordered`, `reverse`), fold it into the existing showcase with a prop comment. Recurring custom layers in showcase code → promote to a real block primitive.
-
 ---
 
-## Build / monorepo
+## Versions and peer deps
 
-### Don't hand-edit `packages/ui/package.json` exports
-The `exports` map for `@vireya/ui` is regenerated on build by `ExportMakerPlugin` (in `packages/ui/src-build/`), based on a fast-glob over `src/components/<group>/<name>/index.tsx`. Adding a new component folder is enough — don't touch the long `exports` block manually. If exports look stale, just run `pnpm --filter @vireya/ui build`.
-
-### React is pinned at 19.2.1 — sync any bump
-React 19.2.1 is a peer dep across every package. Bumping in one package without the rest will produce duplicate-React runtime errors. If you bump, bump everywhere in the same commit, regenerate the lockfile, and re-run the test suite (Storybook + addon-vitest + Playwright in `@vireya/ui`).
-
-### tsup `.d.ts` gotcha — re-export interfaces from the same file
-If you define `IComponentProps` in one file and re-export from `index.tsx`, tsup's DTS bundler can drop the re-export under certain config combinations. Pattern that always works: define `IProps` in the same file as the component, export both with `export { Component, type IComponentProps }`.
+### Pin React to exactly 19.2.1
+Every `@vireya/*` package peer-deps `react@19.2.1` and `react-dom@19.2.1`. Pin the same exact versions in your app's `package.json`. Mismatches cause peer-dep warnings on install and, more dangerously, duplicate-React runtime errors (multiple React copies in `node_modules`). If your package manager hoists multiple Reacts, deduplicate via `pnpm dedupe` / `npm dedupe` / `yarn dedupe`.
