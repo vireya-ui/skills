@@ -264,6 +264,111 @@ Forbidden: multi-layer shadows (`box-shadow: 0 1px 2px ..., 0 4px 8px ...`), war
 
 ---
 
+## Common usage cheat sheet — "I want X, paste Y"
+
+A reverse-lookup index. Match your intent on the left → use the tokens on the right. **Every right-hand value is a complete CSS line, ready to paste.**
+
+### Surfaces & containers
+
+| Intent | Tokens to use |
+|---|---|
+| Page background (default) | `background: var(--v-background-fill);` |
+| Subtle/muted background (sidebar, card-inside-card, table header) | `background: var(--v-secondary-fill);` |
+| Primary surface (sticky CTA strip, dark bg in light mode) | `background: var(--v-primary-fill); color: var(--v-primary-foreground);` |
+| Standard card / tile (resting) | `border: 1px solid var(--v-secondary-border); background: var(--v-background-fill); border-radius: var(--v-radius-12);` |
+| Card hover lift | `transform: translateY(-2px); border-color: var(--v-secondary-active); box-shadow: var(--v-elevation-hover);` |
+| Floating layer (popover, dropdown) | `border: 1px solid var(--v-secondary-border); background: var(--v-background-fill); box-shadow: var(--v-elevation-popover); border-radius: var(--v-radius-8);` |
+| Modal / drawer | `background: var(--v-background-fill); box-shadow: var(--v-elevation-modal); border-radius: var(--v-radius-16);` |
+
+### Text
+
+| Intent | Tokens to use |
+|---|---|
+| Body default | `color: var(--v-background-foreground); font-size: var(--v-font-16);` |
+| Muted body / description / caption | `color: var(--v-secondary-active);` *(NOT `--v-secondary-fill` — `-active` is the muted text on neutral)* |
+| Strong heading text | `color: var(--v-background-foreground); font-weight: var(--v-font-weight-semibold);` |
+| Eyebrow / kicker (mono uppercase) | `font-family: var(--v-font-family-mono); font-size: var(--v-font-12); text-transform: uppercase; letter-spacing: 0.08em; color: var(--v-secondary-active);` |
+| Inline code / kbd | `font-family: var(--v-font-family-mono); font-size: var(--v-font-13); padding: var(--v-height-2) var(--v-width-6); border-radius: var(--v-radius-4); background: var(--v-secondary-fill); color: var(--v-background-foreground);` |
+| Link text (inline) | `color: var(--v-link-fill);` and `text-decoration-color: var(--v-link-border);` |
+| Destructive text (error helper, validation) | `color: var(--v-destructive-fill);` |
+
+### Borders
+
+| Intent | Tokens to use |
+|---|---|
+| Default 1px border (most common) | `border: 1px solid var(--v-secondary-border);` |
+| Stronger border (focused/active card) | `border: 1px solid var(--v-secondary-active);` |
+| Soft divider line between sections | `border-top: 1px solid var(--v-secondary-border);` |
+| Dashed / decorative divider | `border-top: 1px dashed var(--v-secondary-border);` |
+| Destructive border (invalid input) | `border-color: var(--v-destructive-fill);` |
+
+### Buttons / CTAs (when you can't use `<Button>`)
+
+| Intent | Tokens to use |
+|---|---|
+| Primary solid CTA | `background: var(--v-primary-fill); color: var(--v-primary-foreground); border: 1px solid var(--v-primary-border);` + hover `background: var(--v-primary-hover);` |
+| Outlined secondary | `background: transparent; color: var(--v-background-foreground); border: 1px solid var(--v-secondary-border);` + hover `background: var(--v-secondary-fill);` |
+| Ghost link-button | `background: transparent; color: var(--v-secondary-active); border: none;` + hover `color: var(--v-background-foreground);` |
+| Accent CTA (branded) | `background: var(--v-accent-fill, var(--v-primary-fill)); color: var(--v-accent-foreground, var(--v-primary-foreground));` |
+| Destructive button | `background: var(--v-destructive-fill); color: var(--v-destructive-foreground);` |
+| Disabled (any) | `opacity: 0.5; cursor: not-allowed;` (no separate gray) |
+
+### Pills / chips / badges
+
+| Intent | Tokens to use |
+|---|---|
+| Neutral pill (mono label, count) | `padding: var(--v-height-2) var(--v-width-8); border-radius: 9999px; background: var(--v-secondary-fill); color: var(--v-secondary-active); font-family: var(--v-font-family-mono); font-size: var(--v-font-11);` |
+| Accent badge ("Most popular", "New") | `background: var(--v-accent-fill, var(--v-primary-fill)); color: var(--v-accent-foreground, var(--v-primary-foreground));` |
+| Status: success / warning / info | swap `--v-{success,warning,info}-fill` and matching `-foreground` |
+| Status with translucent fill | `background: color-mix(in srgb, var(--v-success-fill) 12%, transparent); color: var(--v-success-fill); border: 1px solid color-mix(in srgb, var(--v-success-fill) 30%, transparent);` |
+
+### Spacing patterns (compose from the ladder)
+
+| Intent | Token |
+|---|---|
+| Inline icon ↔ text gap | `gap: var(--v-width-6);` or `-8` |
+| Form label ↔ input | `gap: var(--v-height-6);` |
+| Card inner padding (small) | `padding: var(--v-height-12) var(--v-width-14);` |
+| Card inner padding (standard) | `padding: var(--v-height-20) var(--v-width-24);` |
+| Section header → content | `gap: var(--v-height-48);` |
+| Title group → action button | `gap: var(--v-width-32);` |
+| Outer page gutter (any section) | `padding-inline: var(--v-page-padding);` |
+| Vertical rhythm between sections | section padding-block `--v-height-32` (gives 64px between siblings) |
+
+### Radii — match parent → child
+
+| Container | Children should use |
+|---|---|
+| Card / tile (`--v-radius-12`) | Buttons, inputs `-8`; badges `-4`; nested icon tiles `-6` |
+| Hero card / pricing tier (`--v-radius-16`) | Buttons `-10`; badges `-6` |
+| Input (`--v-radius-6`) | Inline icons inside: no radius (or `-2`) |
+| Pill/avatar (`9999px`) | Children should not have radius (children are usually a single glyph) |
+
+### Motion
+
+| Intent | Tokens to use |
+|---|---|
+| Default state transition (color, bg, opacity) | `transition: background-color var(--v-motion-duration) var(--v-motion-timing);` *(name the property!)* |
+| Hover lift transform | `transition: transform var(--v-motion-duration) var(--v-motion-timing);` + gate by `@media (hover: hover) and (pointer: fine)` |
+| Reduced motion guard | wrap meaningful animation in `@media (prefers-reduced-motion: reduce) { .x { transition: none; animation: none; } }` |
+
+### `color-mix` recipes (alpha without `rgba`)
+
+```css
+/* 12% tint of primary as a translucent bg */
+background: color-mix(in srgb, var(--v-primary-fill) 12%, transparent);
+
+/* 60% opacity over the page bg (useful for backdrops) */
+background: color-mix(in srgb, var(--v-primary-fill) 60%, transparent);
+
+/* Soft accent ring overlay */
+background: color-mix(in srgb, var(--v-accent-fill, var(--v-primary-fill)) 30%, transparent);
+```
+
+This replaces every `rgba(0,0,0,0.X)` and any hardcoded translucency.
+
+---
+
 ## Current limitations
 
 - `--v-motion-{instant,fast,default,slow,slower}` scale — not tokenized; only the base duration exists.

@@ -1,6 +1,6 @@
 ---
 name: vireya
-description: Use when building or modifying web UIs with the Vireya Design System (@vireya/core, @vireya/ui, @vireya/next, @vireya/blocks). Covers design guidelines (color hierarchy, primary vs accent, typography rhythm, spacing ladder, radius hierarchy, elevation philosophy, motion budget, state contracts, component pairing decisions like Dialog vs Sheet vs Popover), package map, per-component subpath imports, mandatory --v-* token rules, forwardRef + asChild + CSS Module conventions, Next.js setup (ThemeProvider + AppProvider with locale + icons), and a flat catalog of 67 components and 26 blocks. Trigger on mentions of "vireya", "@vireya/*", building landing pages or dashboards with Vireya, designing with Vireya tokens, choosing between Vireya components, or creating Vireya components.
+description: Use when building or modifying web UIs with the Vireya Design System (@vireya/core, @vireya/ui, @vireya/next, @vireya/blocks). Covers design guidelines (color hierarchy, primary vs accent, typography rhythm, spacing ladder, radius hierarchy, elevation philosophy, motion budget, state contracts, component pairing decisions like Dialog vs Sheet vs Popover), package map, per-component subpath imports, mandatory --v-* token rules, forwardRef + asChild + CSS Module conventions, Next.js setup (ThemeProvider + AppProvider with locale + icons), copy-pasteable landing-page recipes (section shell, CMS-style content pattern, hero CTA pair, install snippet with Shiki, pricing tiers, scoped accent zones, RSC + namespace boundary), reverse-lookup token cheat sheet ("I want a card / pill / muted text — paste this"), and a flat catalog of 67 components and 26 blocks. Trigger on mentions of "vireya", "@vireya/*", building landing pages or dashboards with Vireya, designing with Vireya tokens, choosing between Vireya components, or creating Vireya components.
 ---
 
 # Vireya Design System (web)
@@ -22,7 +22,7 @@ This skill teaches you the rules, package boundaries, import shape, and conventi
    border-color: var(--v-accent-border, var(--v-primary-border));
    ```
 
-3. **React 19.2.1 is pinned everywhere.** Never bump React in a single package without syncing the rest of the monorepo.
+3. **React peer is `^19.0.0`.** Vireya ships with React 19 as a peer dependency on every publishable package. Any 19.x works; the system has not been tested against 18.x.
 
 4. **Per-component subpath imports only.** Never `import { Button } from "@vireya/ui"`. Always `import { Button } from "@vireya/ui/form/button"`. Same for blocks: `@vireya/blocks/hero/centered`, not `@vireya/blocks`.
 
@@ -189,8 +189,10 @@ Full decision guide in `references/design.md`. The five rules that prevent most 
 
 | Need | Open |
 |---|---|
+| **Building a landing/marketing page — section shell, CMS pattern, hero CTA pair, install snippet, pricing layout, accent-scoped zones, RSC namespace gotcha** | `references/recipes.md` |
 | Choosing between components, color hierarchy, spacing rhythm, weight/size mapping, anti-patterns, "should this be a Dialog or a Sheet" | `references/design.md` |
 | Detailed props of a specific component | The DTS at `node_modules/@vireya/ui/dist/components/<group>/<name>/index.d.ts` (or IDE go-to-definition on the import) |
+| **"I want a card / pill / muted text / accent CTA — what tokens?"** | `references/tokens.md` → "Common usage cheat sheet" section |
 | Full token catalog (every scale, every composite token, full color sub-token model) | `references/tokens.md` |
 | Block subcomponent shapes (e.g. `PricingTiers.Tier`, `ContactSplit.Form` value type) | `references/blocks.md` |
 | Boilerplate for a new Next.js app, custom themes, theme switching, motion presets | `references/setup.md` |
