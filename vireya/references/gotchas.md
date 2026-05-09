@@ -57,6 +57,12 @@ background: var(--v-accent-fill, var(--v-primary-fill));
 ```
 This applies to `fill`, `foreground`, `hover`, `active`, `subdued`, `border` — every accent sub-token.
 
+### Muted text uses `--v-secondary-active`, NOT `--v-secondary-foreground`
+The most common "no-contrast" bug: painting low-emphasis text with `--v-secondary-foreground` (which is "text on top of `--v-secondary-fill`", auto-derived to look right ONLY when paired with that fill). For muted body text on a normal page background, use `--v-secondary-active` instead. `<Text type="muted">` does this for you.
+
+### Nested-card text color is `--v-background-foreground`, not `--v-secondary-foreground`
+A card with `background: var(--v-secondary-fill)` is a *tone shift*, not a *tier shift*. Default text inside it remains `--v-background-foreground`, just like the page. `*-foreground` of a tier is reserved for "text painted ON `*-fill` of the same tier as the lone surface", which is rare in practice (mostly applies to solid CTAs, not nested containers).
+
 ### `--v-w` and `--v-b` are foreground anchors, not theme colors
 They're theme-invariant (`#ffffff` and `#0a0a0a`) and used as auto-derived foregrounds. Don't redefine them per-theme — set them once at root if you need different absolutes.
 

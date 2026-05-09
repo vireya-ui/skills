@@ -39,14 +39,14 @@ const SectionEyebrow: React.FC<
 const Title: React.FC<
   Omit<React.ComponentProps<typeof Text>, "asElement" | "size" | "weight">
 > = ({ className, ...props }) => (
-  <Text asElement="h2" size={40} weight="semibold"
+  <Text asElement="h2" size="title-lg" weight="semibold"
     className={clsx(styles.title, className)} {...props} />
 );
 
 const Description: React.FC<
   Omit<React.ComponentProps<typeof Text>, "asElement" | "type" | "size">
 > = ({ className, ...props }) => (
-  <Text asElement="p" size={18} type="muted"
+  <Text asElement="p" size="body" type="muted"
     className={clsx(styles.description, className)} {...props} />
 );
 
@@ -59,30 +59,30 @@ export const Section = { Root, Header, Eyebrow: SectionEyebrow, Title, Descripti
   width: 100%;
   max-width: var(--v-page-max-width);
   margin: 0 auto;
-  /* 32px each side -> 64px between consecutive sections */
-  padding: var(--v-height-32) var(--v-page-padding);
+  /* 48px each side → 96px between consecutive sections */
+  padding: var(--v-height-48) var(--v-page-padding);
   display: flex;
   flex-direction: column;
-  gap: var(--v-height-48);
-  scroll-margin-top: var(--v-height-32);
+  gap: var(--v-height-32);
+  scroll-margin-top: var(--v-height-48);
 }
 .header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: var(--v-width-32);
+  gap: var(--v-width-24);
   flex-wrap: wrap;
-  padding-bottom: var(--v-height-24);
+  padding-bottom: var(--v-height-16);
   border-bottom: 1px solid var(--v-secondary-border);
 }
 .titling { display: flex; flex-direction: column; gap: var(--v-height-8); min-width: 0; }
 .headerAction { flex-shrink: 0; white-space: nowrap; }
-.title { line-height: 1.1; letter-spacing: -0.025em; }
-.description { max-width: 64ch; line-height: 1.55; }
+.title { line-height: var(--v-leading-snug); letter-spacing: var(--v-tracking-tight); }
+.description { max-width: 64ch; line-height: var(--v-leading-relaxed); }
 
 @media (max-width: 640px) {
-  .root { gap: var(--v-height-32); }
-  .title { font-size: var(--v-font-28) !important; }
+  .root { padding: var(--v-height-32) var(--v-page-padding); gap: var(--v-height-24); }
+  .title { font-size: var(--v-font-size-title) !important; }
 }
 ```
 
@@ -364,8 +364,8 @@ export const StatsSection = () => {
     <dl className={styles.bar}>
       {items.map((item) => (
         <div key={item.label} className={styles.cell}>
-          <dt><Text size={11} weight="medium">{item.label}</Text></dt>
-          <dd><Text size={28} weight="semibold">{item.value}</Text></dd>
+          <dt><Text size="caption" weight="medium">{item.label}</Text></dt>
+          <dd><Text size="title" weight="semibold">{item.value}</Text></dd>
         </div>
       ))}
     </dl>
@@ -378,7 +378,7 @@ export const StatsSection = () => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   border: 1px solid var(--v-secondary-border);
-  border-radius: var(--v-radius-12);
+  border-radius: var(--v-radius-xl);
   background: var(--v-background-fill);
   overflow: hidden;
 }
@@ -463,7 +463,7 @@ A rail-style preview of a category (blocks family, chart family, etc.). Illustra
 .familyCard {
   display: flex; flex-direction: column;
   border: 1px solid var(--v-secondary-border);
-  border-radius: var(--v-radius-12);
+  border-radius: var(--v-radius-xl);
   background: var(--v-background-fill);
   overflow: hidden; text-decoration: none; color: inherit;
   transition: border-color var(--v-motion-duration) var(--v-motion-timing),

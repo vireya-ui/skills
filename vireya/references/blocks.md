@@ -1,10 +1,32 @@
 # Vireya blocks — compound API reference
 
-Pre-composed landing-page sections in `@vireya/blocks`. All blocks use a compound API (`<Block.Root>` + items). Common props recur across families: `eyebrow`, `title`, `description` (all `ReactNode`); `variant: "default" | "shaded"` for background variants where applicable.
-
-**`emphasis: "primary" | "accent"` (default `"accent"`) is opt-in by design** — only the 8 blocks with concrete accent-eligible visual elements expose it: `hero/{centered,splitVisual}`, `pricing/{tiers,twoTier}`, `feature/{steps,checkList,highlights}`, `eyebrow`. The other 19 blocks intentionally lack `emphasis` because they have no internal element where `accent` vs `primary` would have a visible effect (footers/navbars/logo clouds are neutral chrome; CTAs use `variant`; FAQ/contact/hero-minimal/etc. defer to the `eyebrow` slot — pass `<Eyebrow emphasis="accent">` directly when you need accent there).
+Pre-composed landing-page sections in `@vireya/blocks`. All blocks use a compound API (`<Block.Root>` + items). Common props across families: `eyebrow`, `title`, `description` (all `ReactNode`); `variant: "default" | "shaded"` for background variants where applicable.
 
 For prop details beyond what's listed here, open the DTS at `node_modules/@vireya/blocks/dist/components/<family>/<name>/index.d.ts` (or use IDE go-to-definition on the import).
+
+---
+
+## Which blocks expose `emphasis: "primary" | "accent"`
+
+`emphasis` defaults to `"accent"`. **Only the 8 blocks below expose it** — the rest are intentionally neutral chrome.
+
+- `hero/centered` — `HeroCentered`
+- `hero/splitVisual` — `HeroSplitVisual`
+- `pricing/tiers` — `PricingTiers`
+- `pricing/twoTier` — `PricingTwoTier`
+- `feature/steps` — `FeatureSteps`
+- `feature/checkList` — `FeatureCheckList`
+- `feature/highlights` — `FeatureHighlights`
+- `eyebrow` — `Eyebrow`
+
+**For the other 19 blocks** (footers, navbars, logo clouds, FAQ, CTA banners, contact, hero-minimal, hero-backgroundImage, testimonials, etc.), drive accent through the `eyebrow` slot — pass `<Eyebrow emphasis="accent">Featured</Eyebrow>` directly when you need accent there.
+
+### When to flip emphasis to `primary`
+
+Default to `accent` for promotional surfaces (hero, pricing, feature highlights). Switch to `primary` when:
+- The page has no defined accent in the theme.
+- The section is legal/footer/utility chrome that shouldn't draw promotional attention.
+- You've already used accent in the same viewport-fold (one accent moment per fold).
 
 ---
 

@@ -7,12 +7,10 @@ All tokens are CSS custom properties prefixed `--v-*`, declared on `body` by `@v
 ## Base units (overridable via `<ThemeProvider vars={...}>`)
 
 ```
---v-height           2px    base unit for all --v-height-N
---v-width            2px    base unit for all --v-width-N
---v-font             2px    base unit for all --v-font-N
---v-radius           2px    base unit for all --v-radius-N
+--v-height           2px    base unit for graded --v-height-N
+--v-width            2px    base unit for graded --v-width-N
 --v-motion-delay     0ms
---v-motion-duration  250ms
+--v-motion-duration  250ms    alias of --v-motion-default
 --v-motion-timing    cubic-bezier(0.4, 0, 0.2, 1)
 --v-overlay-z-index  9
 --v-w                #ffffff   "white" anchor (theme-invariant)
@@ -21,13 +19,17 @@ All tokens are CSS custom properties prefixed `--v-*`, declared on `body` by `@v
 
 `--v-w` and `--v-b` are foreground anchors used by auto-derived `foreground` sub-tokens. Override them at the root if your app needs a different "light text" / "dark text" pair.
 
+> **Removed in 0.1.0:** the bare `--v-font` and `--v-radius-md` base units (and the graded `--v-font-N`, `--v-radius-N` derived from them). Font sizes and radii are now semantic, not graded.
+
 ---
 
 ## Font families & weights
 
 ```
---v-font-family-sans   default UI font (override via vars.fontFamily.sans)
---v-font-family-mono   ui-monospace
+--v-font-family-sans   Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+                       "Helvetica Neue", Arial, sans-serif
+--v-font-family-mono   ui-monospace, "SF Mono", Menlo, "Cascadia Code",
+                       "JetBrains Mono", Consolas, monospace
 
 --v-font-weight-regular    400    body text
 --v-font-weight-medium     500    UI active, subheads, buttons, badges
@@ -37,16 +39,53 @@ All tokens are CSS custom properties prefixed `--v-*`, declared on `body` by `@v
 
 ---
 
-## Graded scales
+## Type ramp (semantic)
 
-All four scales follow the same shape: `--v-{family}-N` where `N` is the final px value, computed as `calc(var(--v-{family}) * multiplier)`.
+`--v-font-size-{name}` — 9 degraus modulares. Use os nomes semânticos via `<Text size="...">` ou direto em CSS.
 
-### Spacing — `--v-width-N` and `--v-height-N`
-Use `--v-width-*` for horizontal spacing (inline padding, gap), `--v-height-*` for vertical (block padding, row gap). Same numeric scale on both:
+| Token | px | Role |
+|---|---|---|
+| `--v-font-size-caption` | 12 | Eyebrow, caption, badge, micro-label |
+| `--v-font-size-body-sm` | 14 | Small body, labels, table cells, helpers |
+| `--v-font-size-body` | 16 | **Body default** — paragraphs, list items, form inputs |
+| `--v-font-size-body-lg` | 18 | Lead paragraph |
+| `--v-font-size-title-sm` | 20 | Card title, subhead |
+| `--v-font-size-title` | 24 | Section subtitle, H3 |
+| `--v-font-size-title-lg` | 32 | H2, dashboard heading |
+| `--v-font-size-display` | 48 | Hero medium, pricing display |
+| `--v-font-size-display-lg` | 64 | Hero principal |
 
-`1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 52, 56, 60, 64, 72, 80, 96, 112, 128`
+Em React: `<Text size="body-lg">`. Em CSS: `font-size: var(--v-font-size-body);`.
 
-(Step is 2 up to 32, then jumps. `--v-width-1` is half the base unit.)
+---
+
+## Line-height & letter-spacing
+
+```
+--v-leading-tight     1.05      display
+--v-leading-snug      1.15      titles
+--v-leading-normal    1.4       UI / labels / dense
+--v-leading-relaxed   1.55      body paragraph
+
+--v-tracking-tight    -0.02em   display
+--v-tracking-normal   0         default
+--v-tracking-wide     0.04em    UI labels small caps
+--v-tracking-eyebrow  0.08em    uppercase eyebrows
+```
+
+Em CSS: `line-height: var(--v-leading-relaxed);`, `letter-spacing: var(--v-tracking-eyebrow);`. Sem literais inline.
+
+---
+
+## Spacing scale (graded)
+
+`--v-width-N` (horizontal) e `--v-height-N` (vertical). Mesma escala numérica em ambos:
+
+```
+1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 32, 40, 48, 64, 80, 96, 128
+```
+
+20 valores. Faixa principal step=2 (2..24), depois saltos maiores (32, 40, 48, 64, 80, 96, 128) + hairline `1`.
 
 Common usage:
 - `1`–`8`: internal component spacing (icon gap, label-to-input)
@@ -54,39 +93,28 @@ Common usage:
 - `16`: standard inline gap
 - `24`: standard vertical group gap
 - `32`: major group gap (title → actions)
+- `40`: field/button height (default)
 - `48`–`64`: section-internal gaps
+- `80`: mid gutter
 - `96`–`128`: section padding (mobile / desktop hero)
 
-### Font sizes — `--v-font-N`
-`1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 36, 40, 48, 56, 64`
+> **Removidos** em 0.1.0: `3, 5, 28, 38, 42` (valores arbitrários). Snap pra vizinho mais próximo via codemod.
 
-Named scale (used in `<Text size="md">`):
+---
 
-| Name | px | Use |
+## Radius scale (semantic)
+
+`--v-radius-{name}` — 7 degraus, sem furos numéricos. Substitui a antiga escala graded `--v-radius-N`.
+
+| Token | px | Use |
 |---|---|---|
-| `xxs` | 12 | eyebrow, caption, badge |
-| `xs`  | 14 | small body, labels, table cells |
-| `ss`  | 16 | **body default** |
-| `sm`  | 18 | body lead |
-| `md`  | 20 | card title, subhead |
-| `lg`  | 24 | section subtitle |
-| `sl`  | 28 | featured quote |
-| `xl`  | 32 | H3, dashboard heading |
-| `xxl` | 36 | H2, section heading |
-
-For display sizes (48–72px), pass `<Text size={48}>` directly — there's no named equivalent.
-
-### Border radius — `--v-radius-N`
-`1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32`
-
-Common usage:
-- `2`–`4`: sharp / inline (badge)
-- `6`–`8`: input, button
-- `12`: card, feature item
-- `16`–`20`: hero card, pricing tier
-- `32`: xlarge
-
-`9999px` is allowed for true pill/circle shapes (not tokenized).
+| `--v-radius-xs` | 2 | Chart bars, hairline accents |
+| `--v-radius-sm` | 4 | Badges, chips, tags, tooltip |
+| `--v-radius-md` | 6 | Inputs, buttons (default), alerts, dropdown |
+| `--v-radius-lg` | 8 | Buttons large, button `shape_square` |
+| `--v-radius-xl` | 12 | Cards, feature items, dialog |
+| `--v-radius-2xl` | 16 | Pricing tier, hero card, drawer |
+| `--v-radius-full` | 9999px | Pill / circle (intencional) |
 
 ---
 
@@ -98,11 +126,11 @@ Five size tiers — `ss, sm, md, lg, xl` — pre-composed from the graded scales
 
 | Tier | height | padding | font | size (inner) |
 |---|---|---|---|---|
-| `ss` | 28px | 12px | 12px | 22px |
-| `sm` | 32px | 14px | 14px | 24px |
-| `md` (default) | 38px | 16px | 14px | 28px |
-| `lg` | 42px | 18px | 14px | 32px |
-| `xl` | 48px | 24px | 16px | 38px |
+| `ss` | 24px | 12px | `caption` (12) | 20px |
+| `sm` | 32px | 12px | `body-sm` (14) | 24px |
+| `md` (default) | 40px | 16px | `body-sm` (14) | 24px |
+| `lg` | 40px | 20px | `body` (16) | 32px |
+| `xl` | 48px | 24px | `body` (16) | 40px |
 
 ```css
 height: var(--v-field-md-height);
@@ -114,21 +142,21 @@ font-size: var(--v-field-md-font);
 
 | Tier | size | font |
 |---|---|---|
-| `ss` | 24px | 10px |
-| `sm` | 32px | 12px |
-| `md` | 48px | 16px |
-| `lg` | 64px | 24px |
-| `xl` | 96px | 32px |
+| `ss` | 24px | `caption` (12) |
+| `sm` | 32px | `caption` (12) |
+| `md` | 48px | `body` (16) |
+| `lg` | 64px | `title` (24) |
+| `xl` | 96px | `title-lg` (32) |
 
 ### Badge
 
 | Tier | font | padding |
 |---|---|---|
-| `ss` | 10px | 8px |
-| `sm` | 12px | 10px |
-| `md` | 14px | 12px |
-| `lg` | 16px | 14px |
-| `xl` | 18px | 16px |
+| `ss` | `caption` (12) | 8px |
+| `sm` | `caption` (12) | 12px |
+| `md` | `body-sm` (14) | 12px |
+| `lg` | `body` (16) | 16px |
+| `xl` | `body-lg` (18) | 16px |
 
 ### Icon
 
@@ -196,24 +224,24 @@ border-color:     var(--v-accent-border, var(--v-primary-border));
 
 ## Motion
 
-Only one duration and one easing are tokenized today. For multi-step orchestrations, scope additional values inside the component CSS Module (and consider promoting them to core if they recur).
+Role-based duration scale + base easing/delay. Pick the tier that matches the interaction; don't tokenize one-offs.
 
 ```
---v-motion-duration  250ms
---v-motion-timing    cubic-bezier(0.4, 0, 0.2, 1)   /* material standard */
+--v-motion-instant   0ms       (micro acks, debug)
+--v-motion-fast      150ms     hover, focus ring
+--v-motion-default   250ms     state transitions, accordion expand
+--v-motion-slow      400ms     drawer slide, page reveal
+--v-motion-slower    600ms     orchestrated/sequenced reveals
+
+--v-motion-duration  250ms     alias of `default` (legacy)
+--v-motion-timing    cubic-bezier(0.4, 0, 0.2, 1)
 --v-motion-delay     0ms
 ```
 
-Recommended (informal) duration tiers when you need finer control:
-- 150ms — micro-interactions (hover, focus)
-- 250ms — default state changes (the token)
-- 400ms — drawer, accordion
-- 600ms — orchestrated/sequenced reveals
-
-Always name the property in `transition` — never `transition: all`:
+Sempre nomeie a propriedade no `transition` — nunca `transition: all`:
 ```css
-transition: background-color var(--v-motion-duration) var(--v-motion-timing),
-            color            var(--v-motion-duration) var(--v-motion-timing);
+transition: background-color var(--v-motion-default) var(--v-motion-timing),
+            color            var(--v-motion-default) var(--v-motion-timing);
 ```
 
 ---
@@ -275,20 +303,20 @@ A reverse-lookup index. Match your intent on the left → use the tokens on the 
 | Page background (default) | `background: var(--v-background-fill);` |
 | Subtle/muted background (sidebar, card-inside-card, table header) | `background: var(--v-secondary-fill);` |
 | Primary surface (sticky CTA strip, dark bg in light mode) | `background: var(--v-primary-fill); color: var(--v-primary-foreground);` |
-| Standard card / tile (resting) | `border: 1px solid var(--v-secondary-border); background: var(--v-background-fill); border-radius: var(--v-radius-12);` |
+| Standard card / tile (resting) | `border: 1px solid var(--v-secondary-border); background: var(--v-background-fill); border-radius: var(--v-radius-xl);` |
 | Card hover lift | `transform: translateY(-2px); border-color: var(--v-secondary-active); box-shadow: var(--v-elevation-hover);` |
-| Floating layer (popover, dropdown) | `border: 1px solid var(--v-secondary-border); background: var(--v-background-fill); box-shadow: var(--v-elevation-popover); border-radius: var(--v-radius-8);` |
-| Modal / drawer | `background: var(--v-background-fill); box-shadow: var(--v-elevation-modal); border-radius: var(--v-radius-16);` |
+| Floating layer (popover, dropdown) | `border: 1px solid var(--v-secondary-border); background: var(--v-background-fill); box-shadow: var(--v-elevation-popover); border-radius: var(--v-radius-lg);` |
+| Modal / drawer | `background: var(--v-background-fill); box-shadow: var(--v-elevation-modal); border-radius: var(--v-radius-2xl);` |
 
 ### Text
 
 | Intent | Tokens to use |
 |---|---|
-| Body default | `color: var(--v-background-foreground); font-size: var(--v-font-16);` |
+| Body default | `color: var(--v-background-foreground); font-size: var(--v-font-size-body); line-height: var(--v-leading-relaxed);` |
 | Muted body / description / caption | `color: var(--v-secondary-active);` *(NOT `--v-secondary-fill` — `-active` is the muted text on neutral)* |
-| Strong heading text | `color: var(--v-background-foreground); font-weight: var(--v-font-weight-semibold);` |
-| Eyebrow / kicker (mono uppercase) | `font-family: var(--v-font-family-mono); font-size: var(--v-font-12); text-transform: uppercase; letter-spacing: 0.08em; color: var(--v-secondary-active);` |
-| Inline code / kbd | `font-family: var(--v-font-family-mono); font-size: var(--v-font-13); padding: var(--v-height-2) var(--v-width-6); border-radius: var(--v-radius-4); background: var(--v-secondary-fill); color: var(--v-background-foreground);` |
+| Strong heading text | `color: var(--v-background-foreground); font-weight: var(--v-font-weight-semibold); line-height: var(--v-leading-snug);` |
+| Eyebrow / kicker (mono uppercase) | `font-family: var(--v-font-family-mono); font-size: var(--v-font-size-caption); text-transform: uppercase; letter-spacing: var(--v-tracking-eyebrow); color: var(--v-secondary-active);` |
+| Inline code / kbd | `font-family: var(--v-font-family-mono); font-size: var(--v-font-size-body-sm); padding: var(--v-height-2) var(--v-width-6); border-radius: var(--v-radius-sm); background: var(--v-secondary-fill); color: var(--v-background-foreground);` |
 | Link text (inline) | `color: var(--v-link-fill);` and `text-decoration-color: var(--v-link-border);` |
 | Destructive text (error helper, validation) | `color: var(--v-destructive-fill);` |
 
@@ -317,7 +345,7 @@ A reverse-lookup index. Match your intent on the left → use the tokens on the 
 
 | Intent | Tokens to use |
 |---|---|
-| Neutral pill (mono label, count) | `padding: var(--v-height-2) var(--v-width-8); border-radius: 9999px; background: var(--v-secondary-fill); color: var(--v-secondary-active); font-family: var(--v-font-family-mono); font-size: var(--v-font-11);` |
+| Neutral pill (mono label, count) | `padding: var(--v-height-2) var(--v-width-8); border-radius: var(--v-radius-full); background: var(--v-secondary-fill); color: var(--v-secondary-active); font-family: var(--v-font-family-mono); font-size: var(--v-font-size-caption);` |
 | Accent badge ("Most popular", "New") | `background: var(--v-accent-fill, var(--v-primary-fill)); color: var(--v-accent-foreground, var(--v-primary-foreground));` |
 | Status: success / warning / info | swap `--v-{success,warning,info}-fill` and matching `-foreground` |
 | Status with translucent fill | `background: color-mix(in srgb, var(--v-success-fill) 12%, transparent); color: var(--v-success-fill); border: 1px solid color-mix(in srgb, var(--v-success-fill) 30%, transparent);` |
@@ -328,7 +356,7 @@ A reverse-lookup index. Match your intent on the left → use the tokens on the 
 |---|---|
 | Inline icon ↔ text gap | `gap: var(--v-width-6);` or `-8` |
 | Form label ↔ input | `gap: var(--v-height-6);` |
-| Card inner padding (small) | `padding: var(--v-height-12) var(--v-width-14);` |
+| Card inner padding (small) | `padding: var(--v-height-12) var(--v-width-16);` |
 | Card inner padding (standard) | `padding: var(--v-height-20) var(--v-width-24);` |
 | Section header → content | `gap: var(--v-height-48);` |
 | Title group → action button | `gap: var(--v-width-32);` |
@@ -339,17 +367,17 @@ A reverse-lookup index. Match your intent on the left → use the tokens on the 
 
 | Container | Children should use |
 |---|---|
-| Card / tile (`--v-radius-12`) | Buttons, inputs `-8`; badges `-4`; nested icon tiles `-6` |
-| Hero card / pricing tier (`--v-radius-16`) | Buttons `-10`; badges `-6` |
-| Input (`--v-radius-6`) | Inline icons inside: no radius (or `-2`) |
-| Pill/avatar (`9999px`) | Children should not have radius (children are usually a single glyph) |
+| Card / tile (`--v-radius-xl`) | Buttons, inputs `lg` (8px); badges `sm` (4px); nested icon tiles `md` (6px) |
+| Hero card / pricing tier (`--v-radius-2xl`) | Buttons `lg`; badges `md` |
+| Input (`--v-radius-md`) | Inline icons inside: no radius (or `xs`) |
+| Pill/avatar (`--v-radius-full`) | Children should not have radius (children are usually a single glyph) |
 
 ### Motion
 
 | Intent | Tokens to use |
 |---|---|
-| Default state transition (color, bg, opacity) | `transition: background-color var(--v-motion-duration) var(--v-motion-timing);` *(name the property!)* |
-| Hover lift transform | `transition: transform var(--v-motion-duration) var(--v-motion-timing);` + gate by `@media (hover: hover) and (pointer: fine)` |
+| Default state transition (color, bg, opacity) | `transition: background-color var(--v-motion-default) var(--v-motion-timing);` *(name the property!)* |
+| Hover lift transform | `transition: transform var(--v-motion-default) var(--v-motion-timing);` + gate by `@media (hover: hover) and (pointer: fine)` |
 | Reduced motion guard | wrap meaningful animation in `@media (prefers-reduced-motion: reduce) { .x { transition: none; animation: none; } }` |
 
 ### `color-mix` recipes (alpha without `rgba`)
@@ -367,9 +395,10 @@ background: color-mix(in srgb, var(--v-accent-fill, var(--v-primary-fill)) 30%, 
 
 This replaces every `rgba(0,0,0,0.X)` and any hardcoded translucency.
 
+For gradient spotlights, frosted overlays, and accent glows that compose `color-mix` into the canonical Vireya visual depth treatment, see `design.md` → **"Visual depth — gradients, spotlights, masks"**. Six recipes covering top-spotlight heroes, bottom-spotlight cards, illustration masks, frosted-glass UI, accent glows, and halo text-shadows.
+
 ---
 
 ## Current limitations
 
-- `--v-motion-{instant,fast,default,slow,slower}` scale — not tokenized; only the base duration exists.
 - `--v-density-multiplier` — deferred until a second consumer needs it.

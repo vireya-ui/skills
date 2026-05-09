@@ -249,3 +249,9 @@ After scaffolding, confirm:
 - [ ] No hardcoded colors/sizes anywhere — only `var(--v-*)`
 - [ ] All component imports are subpaths: `@vireya/ui/<group>/<name>` or `@vireya/blocks/<family>/<name>`
 - [ ] `useTheme` is imported from `@vireya/next/client`, not `@vireya/next`
+
+---
+
+## Next: build the canonical Section primitive
+
+After wiring providers, your first app component should be the `Section` namespace primitive (Root/Header/Eyebrow/Title/Description). Every Vireya page section composes it. The full code lives in `references/recipes.md` recipe #1 — copy it verbatim into `src/components/section.tsx` + `section.module.css`. The pairing is calibrated: `<Text size="title-lg" weight="semibold">` for `Section.Title`, `<Text size="body" type="muted">` for `Section.Description`, mobile shrinks the title to `var(--v-font-size-title) !important`.
