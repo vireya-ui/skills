@@ -80,6 +80,7 @@ Install: `pnpm add @vireya/core @vireya/ui @vireya/next @vireya/blocks react@19.
 | Block sub-component shapes (`PricingTiers.Tier`, `ContactSplit.Form` types), which blocks expose `emphasis` | `references/blocks.md` |
 | Full token catalog, composite tokens, every scale | `references/tokens.md` |
 | Type errors, RSC traps, hydration issues, animation flickers, missing icons | `references/gotchas.md` |
+| **Upgrading from a pre-0.1.0 `@vireya/*` (token API reshape, codemod, manual fixes)** | `references/migration.md` |
 | Detailed props of a specific component | DTS at `node_modules/@vireya/ui/dist/components/<group>/<name>/index.d.ts` |
 | Comprehensive offline reference | `node_modules/@vireya/ui/LLMS.md` (bundled in tarball) |
 

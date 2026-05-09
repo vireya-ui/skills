@@ -10,7 +10,7 @@ The Vireya skill ships through three channels — keep them in sync when editing
 2. **`packages/ui/LLMS.md`** — bundled inside the `@vireya/ui` npm tarball, lands at `node_modules/@vireya/ui/LLMS.md` for the consumer. **Comprehensive offline doc** — duplicates the canonical setup, Section primitive, color pairing, CTA matrix, self-audit. Edited manually; not auto-generated.
 3. **`https://www.vireya.dev/llms.txt` + `/llms-full.txt` + `/llms/<file>.md`** — served by `apps/www/src/app/llms*` route handlers, reading from `apps/www/src/lib/llms-source.ts`, which in turn reads `skills/vireya/SKILL.md` and `skills/vireya/references/*.md`. Editing the skill here automatically updates the web routes.
 
-`llms-source.ts` only reads `SKILL.md` and the six named references (`design`, `recipes`, `setup`, `blocks`, `tokens`, `gotchas`). New files in `skills/vireya/` don't get served unless the metadata array there is extended. **This `AGENTS.md` is therefore not exposed.**
+`llms-source.ts` reads `SKILL.md` and the seven named references (`design`, `recipes`, `setup`, `blocks`, `tokens`, `gotchas`, `migration`). New files in `skills/vireya/` don't get served unless the metadata array there is extended. **This `AGENTS.md` is therefore not exposed.**
 
 ## Editing rules
 
